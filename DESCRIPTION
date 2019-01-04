@@ -1,7 +1,7 @@
 Package: flowFP
 Type: Package
 Title: Fingerprinting for Flow Cytometry
-Version: 1.41.0
+Version: 1.41.1
 Author: Herb Holyst <holyst@mail.med.upenn.edu>, Wade Rogers
         <rogersw@mail.med.upenn.edu>
 Date: 2009
@@ -20,4 +20,4 @@ Collate: AllClasses.R flowFP-utils.R flowFPModel.R flowFP.R
 LazyLoad: TRUE
 License: Artistic-2.0
 Packaged: 2015-03-30 14:57:13 
-biocViews: FlowCytometry, CellBasedAssays, Clustering, Visualization
+biocViews: ImmunoOncology, FlowCytometry, CellBasedAssays, Clustering, Visualization
