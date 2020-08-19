@@ -4,13 +4,13 @@
 ## Author: Herb Holyst
 ##
 ##  Copyright (C) 2009 by University of Pennsylvania,
-##  Philadelphia, PA USA. All rights reserved. 
+##  Philadelphia, PA USA. All rights reserved.
 ##
 
 ## =========================================================================
 ## Constructor for flowFPModel.
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-flowFPModel <- function(fcs, name="Default Model", parameters=NULL, 
+flowFPModel <- function(fcs, name="Default Model", parameters=NULL,
                         nRecursions='auto', dequantize=TRUE, sampleSize=NULL,
                         excludeTime=TRUE)
 {
@@ -55,20 +55,20 @@ flowFPModel <- function(fcs, name="Default Model", parameters=NULL,
 			ind = sample(1:nrow(fcs), training_events)
 			exprs(fcs) = exprs(fcs)[ind,]
 		}
-	} 
+	}
 
 	parameters = parse_parameters(colnames(fcs), parameters, excludeTime)
-	
+
 	if (nRecursions == 'auto') {
 		nRecursions = (log2(training_events) %/% 1) - 3 # at least 8 events / bin
 	}
 
 	validate_params(fcs, parameters, nRecursions)
-  
 
-	model = new("flowFPModel", name=name, parameters=parameters, 
+
+	model = new("flowFPModel", name=name, parameters=parameters,
 	            nRecursions=nRecursions, .cRecursions=nRecursions,
-	            trainingSet=trainingSet, dequantize=dequantize, 
+	            trainingSet=trainingSet, dequantize=dequantize,
 	            trainingSetParams=colnames(fcs))
 
 	model@.tmp_tags = vector(mode = "integer", length = nrow(fcs))
@@ -80,7 +80,7 @@ flowFPModel <- function(fcs, name="Default Model", parameters=NULL,
 	model@binBoundary = createBinBoundaries(model, fcs)
 	# empty temp tags & hope the GC returns memory.
 	model@.tmp_tags = vector(mode = "integer", length = 0)
-	
+
   return (model)
 }
 
@@ -108,15 +108,16 @@ is.flowFPModel <-function(obj) {
 ## equal 2^nRecursions.
 bin_level <- function(fcs, model, level) {
   # number of bins at this level
-  num_splits = as.integer(2**(level -1))
-  model@split_val[[level]] = vector(mode="numeric", length=num_splits)
-  model@split_axis[[level]] = vector(mode="integer", length=num_splits)
+  num_splits = as.integer(2**(level - 1))
+  model@split_val[[level]] = vector(mode = "numeric", length = num_splits)
+  model@split_axis[[level]] = vector(mode = "integer", length = num_splits)
 
-  param_idx = parameters(model, index=TRUE)
+  param_idx = parameters(model, index = TRUE)
 
-  .Call("bin_level", fcs@exprs, model@.tmp_tags, model@split_axis[[level]], 
+  .Call("bin_level", fcs@exprs, model@.tmp_tags, model@split_axis[[level]],
         model@split_val[[level]], level, param_idx)
-  return (model)
+
+  return(model)
 }
 
 ##
@@ -124,7 +125,7 @@ bin_level <- function(fcs, model, level) {
 ##
 ## This function is a book-keeping nightmare... It figures out in multi-dimensional
 ## space the bin boundaries of each bin in a model.
-createBinBoundaries <-function(model, fcs) {
+createBinBoundaries <- function(model, fcs) {
 
 	nRecursions = model@.cRecursions
 	numfeatures = 2^nRecursions
@@ -135,7 +136,7 @@ createBinBoundaries <-function(model, fcs) {
 	rng = range(fcs)
 	ll = unlist(rng["min",])
 	ur = unlist(rng["max",])
-	
+
 	## create the starting bin 'level 0' contains all of the data.
 	tmpBB = new("binBoundary", ll=ll, ur=ur)
 	binBList = list();
@@ -153,7 +154,7 @@ createBinBoundaries <-function(model, fcs) {
 			binBList[[dest[j]]]@ll[split_axis] = split_val
 			binBList[[src[j]]]@ur[split_axis] = split_val
 		}
-		
+
 	}
 
 	return (binBList)
@@ -186,7 +187,7 @@ dequantize <- function(x, alpha=1e-8) {
 			    exprs(fcs[[i]]) <- exprs(fcs[[i]]) + ofs
 			}
 		}
-		
+
 	}
   return(fcs)
 }
@@ -194,7 +195,7 @@ dequantize <- function(x, alpha=1e-8) {
 
 ## This private function checks the input parameters for validity. Some
 ## of the rules are:
-##  - The FCS parameters list cannot contain NA's. 
+##  - The FCS parameters list cannot contain NA's.
 ##  - The number of leaf bins, (based on nRecursions) must be smaller
 ##    than the number of events in the fcs flowFrame.
 ##
@@ -204,7 +205,7 @@ validate_params <-function(x, parameters, nRecursions) {
   }
 
   if (2^nRecursions > nrow(x)) {
-    stop("ERROR: Model with too many nRecursions, max num nRecursions = ", 
+    stop("ERROR: Model with too many nRecursions, max num nRecursions = ",
          as.integer(log2(nrow(x)) - 1), "\n")
   }
   return
