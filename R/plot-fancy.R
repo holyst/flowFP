@@ -89,11 +89,17 @@ plotFancy <- function(x, y, highlight=NULL, parameters=NULL,
 		first_time = FALSE
 	}
 
-	if(!is.null(showbins) ) {
-		if ( (is.logical(showbins) && showbins == TRUE) || showbins == 'all') {
-			showbins = 1:nFeatures(fp)
-		}
+	if(!is.null(showbins)) {
+	  if (is.logical(showbins)) {
+	    if (all(showbins) == TRUE) {
+	      showbins = 1:nFeatures(fp)
+	    }
+	  }
+	  if (showbins == 'all') {
+	    showbins = 1:nFeatures(fp)
+	  }
 	}
+
 	if (is.numeric(showbins)) {
 		plotBinBoundaries(fp, y=fs, parameters, alpha, border, showbins, pch=pch, cex=cex)
 	}
